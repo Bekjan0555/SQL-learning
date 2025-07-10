@@ -15,6 +15,7 @@ INSERT INTO #RegionSales (Region, Distributor, Sales) VALUES
 ('North','ACME',65), ('South','ACME',9), ('East','ACME',1), ('West','ACME',7),
 ('North','Direct Parts',8), ('South','Direct Parts',7), ('West','Direct Parts',12);
 
+--1.
 SELECT 
     r.Region,
     d.Distributor,
@@ -195,40 +196,6 @@ WHERE
 ORDER BY 
     e.EmpID;
 --8.
-WITH Matches AS (
-    SELECT 
-        t.TicketID,
-        (
-            (t.Num1 IN (w.Num1, w.Num2, w.Num3, w.Num4, w.Num5)) +
-            (t.Num2 IN (w.Num1, w.Num2, w.Num3, w.Num4, w.Num5)) +
-            (t.Num3 IN (w.Num1, w.Num2, w.Num3, w.Num4, w.Num5)) +
-            (t.Num4 IN (w.Num1, w.Num2, w.Num3, w.Num4, w.Num5)) +
-            (t.Num5 IN (w.Num1, w.Num2, w.Num3, w.Num4, w.Num5))
-        ) AS MainMatches,
-        (t.BonusNum = w.BonusNum) AS BonusMatch
-    FROM 
-        Tickets t
-    CROSS JOIN 
-        WinningNumbers w
-    WHERE 
-        w.DrawDate = '2025-07-06'
-)
-SELECT 
-    SUM(
-        CASE 
-            WHEN MainMatches = 5 AND BonusMatch = 1 THEN 100
-            WHEN MainMatches BETWEEN 1 AND 4 OR (MainMatches = 5 AND BonusMatch = 0) THEN 10
-            ELSE 0
-        END
-    ) AS TotalWinnings
-FROM 
-    Matches;
-
-
-
-
-
-
 -- Create and populate WinningNumbers table
 DROP TABLE IF EXISTS WinningNumbers;
 CREATE TABLE WinningNumbers (
@@ -239,7 +206,6 @@ CREATE TABLE WinningNumbers (
 );
 INSERT INTO WinningNumbers (DrawDate, Num1, Num2, Num3)
 VALUES ('2025-07-06', 25, 45, 78);
-
 -- Create and populate sample Tickets table
 DROP TABLE IF EXISTS Tickets;
 CREATE TABLE Tickets (
@@ -254,32 +220,7 @@ VALUES
     (2, 25, 45, 10),  -- Matches 2
     (3, 25, 12, 13),  -- Matches 1
     (4, 11, 12, 13);  -- Matches 0
-
--- Query to calculate total winnings
-WITH Matches AS (
-    SELECT 
-        t.TicketID,
-        (   CAST((t.Num1 = w.Num1 OR t.Num1 = w.Num2 OR t.Num1 = w.Num3) AS INT) +
-            CAST((t.Num2 = w.Num1 OR t.Num2 = w.Num2 OR t.Num2 = w.Num3) AS INT) +
-            CAST((t.Num3 = w.Num1 OR t.Num3 = w.Num2 OR t.Num3 = w.Num3) AS INT)
-        ) AS MatchCount
-    FROM 
-        Tickets t
-    CROSS JOIN 
-        WinningNumbers w
-    WHERE 
-        w.DrawDate = '2025-07-06'
-)
-SELECT 
-    COALESCE(SUM(
-        CASE 
-            WHEN MatchCount = 3 THEN 100
-            WHEN MatchCount IN (1, 2) THEN 10
-            ELSE 0
-        END
-    ), 0) AS TotalWinnings
-FROM 
-    Matches;
+	select * from Tickets
 --9.
 CREATE TABLE Spending (
   User_id INT,
@@ -294,7 +235,8 @@ INSERT INTO Spending VALUES
 (2,'2019-07-02','Mobile',100),
 (3,'2019-07-01','Desktop',100),
 (3,'2019-07-02','Desktop',100);
-
+--10
+--text
 DROP TABLE IF EXISTS Grouped;
 CREATE TABLE Grouped (
     Product VARCHAR(100) PRIMARY KEY,
